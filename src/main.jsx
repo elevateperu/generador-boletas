@@ -14,7 +14,7 @@ const router = createHashRouter([
     element: <App />,
   },
   {
-    path: "/generador-boletas/",
+    path: "/generador-boletas/*",
     element: <LoginPage/>,
   },
 ]);
