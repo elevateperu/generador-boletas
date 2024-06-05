@@ -3,10 +3,21 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useState } from "react";
 import "./App.css";
+import axios from "axios";
+import Loading from "./components/Loading";
+import Entrada from "./components/Entrada";
+import QRCode from "react-qr-code";
+import { Navigate } from "react-router-dom";
 
 function App() {
+  const [openModal, setOpenModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [dataModal, setDataModal] = useState({});
+  const [showTickets, setShowTickets] = useState(false);
+  const [user, setUser] = useState(localStorage.getItem('isLoggedIn'))
   const [formData, setFormData] = useState({
     nombreApellido: "",
+    apellido: "",
     dni: "",
     telefono: "",
     correo: "",
@@ -21,7 +32,7 @@ function App() {
     tipoEntrada: "",
   });
 
-  const handleInputChange = (e, index) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     const newFormData = { ...formData };
 
@@ -30,37 +41,96 @@ function App() {
     setFormData(newFormData);
   };
   const descargarPDF = () => {
+    console.log(loading);
     const input = document.getElementById("comprobante-pago");
-
+    setLoading(true);
     html2canvas(input, { scale: 3 }) // Ajusta la escala para una mejor resolución
       .then((canvas) => {
         const imgData = canvas.toDataURL("image/png", 1.0); // Ajusta la calidad de la imagen
-        const pdf = new jsPDF("p", "mm", "a4");
+        const pdf = new jsPDF("p", "mm", "a4", true);
         const imgWidth = 190; // mm
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
         pdf.save("comprobante_pago.pdf");
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error al generar PDF:", error);
+        setLoading(false);
       });
   };
-
+  const descargarEntradas = (cantidad) => {
+    const input = document.getElementById("entradas");
+    setLoading(true);
+    html2canvas(input, { scale: 3 }) // Ajusta la escala para una mejor resolución
+      .then((canvas) => {
+        const imgData = canvas.toDataURL("image/png", 1.0); // Ajusta la calidad de la imagen
+        const customWidth = 210; // Por ejemplo, A4 tiene 210mm de ancho
+        const customHeight = 297; // Por ejemplo, A4 tiene 297mm de alto
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: [customWidth, customHeight * (cantidad / 1.5)],
+          compress: true, // Habilitar compresión
+          compression: "MEDIUM", // Niveles de compresión: NONE, FAST, MEDIUM, SLOW
+        });
+        const imgWidth = 190; // mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+        pdf.save("entradas.pdf");
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error al generar PDF:", error);
+        setLoading(false);
+      });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const response = await axios.post(
+      "https://www.conciertoelevate.com/ticket",
+      {
+        quantity: formData.cantidad,
+        price: (formData.tipoEntrada == "General" && 35) || 60,
+        nameUser: formData.nombreApellido,
+        lastName: formData.apellido,
+        dni: formData.dni,
+        email: formData.correo,
+        phone: formData.telefono,
+        codeTransaction: formData.codigoPago,
+      }
+    );
+    setLoading(false);
+    if (response.status == 200) {
+      setDataModal(response.data);
+      alert("Se registró correctamente");
+      setOpenModal(true);
+      setShowTickets(true);
+    } else {
+      alert("Hubo un error al generar las entradas");
+    }
+    console.log(response);
+    console.log(dataModal);
+  };
   return (
     <>
+    {!user && (
+          <Navigate to="/" replace={true} />
+        )}
       <section
         id="formulario"
         className="p-8 bg-white border border-gray-300 max-w-4xl mx-auto my-8"
       >
         <h2 className="text-2xl font-bold mb-4">Datos del Cliente</h2>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
               <label
                 htmlFor="nombreApellido"
                 className="block mb-1 font-semibold"
               >
-                Nombre y Apellido:
+                Nombre:
               </label>
               <input
                 type="text"
@@ -69,6 +139,21 @@ function App() {
                 value={formData.nombreApellido}
                 onChange={(e) => handleInputChange(e)}
                 className="w-full border border-gray-900 rounded-md px-3 py-2"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="apellido" className="block mb-1 font-semibold">
+                Apellido:
+              </label>
+              <input
+                type="text"
+                id="apellido"
+                name="apellido"
+                value={formData.apellido}
+                onChange={(e) => handleInputChange(e)}
+                className="w-full border border-gray-900 rounded-md px-3 py-2"
+                required
               />
             </div>
             <div>
@@ -82,6 +167,7 @@ function App() {
                 value={formData.dni}
                 onChange={(e) => handleInputChange(e)}
                 className="w-full border border-gray-900 rounded-md px-3 py-2"
+                required
               />
             </div>
             <div>
@@ -95,6 +181,7 @@ function App() {
                 value={formData.telefono}
                 onChange={(e) => handleInputChange(e)}
                 className="w-full border border-gray-900 rounded-md px-3 py-2"
+                required
               />
             </div>
             <div>
@@ -108,6 +195,7 @@ function App() {
                 value={formData.correo}
                 onChange={(e) => handleInputChange(e)}
                 className="w-full border border-gray-900 rounded-md px-3 py-2"
+                required
               />
             </div>
             <div>
@@ -121,6 +209,7 @@ function App() {
                 value={formData.codigoPago}
                 onChange={(e) => handleInputChange(e)}
                 className="w-full border border-gray-900 rounded-md px-3 py-2"
+                required
               />
             </div>
             <div>
@@ -133,6 +222,7 @@ function App() {
                 value={formData.medioPago}
                 onChange={(e) => handleInputChange(e)}
                 className="w-full border border-gray-900 rounded-md px-3 py-2"
+                required
               >
                 <option value="">Seleccione</option>
                 <option value="YAPE">YAPE</option>
@@ -150,6 +240,7 @@ function App() {
                 value={formData.tipoEntrada}
                 onChange={(e) => handleInputChange(e)}
                 className="w-full border border-gray-900 rounded-md px-3 py-2"
+                required
               >
                 <option value="">Seleccione</option>
                 <option value="General">General</option>
@@ -167,11 +258,17 @@ function App() {
                 value={formData.cantidad}
                 onChange={(e) => handleInputChange(e)}
                 className="w-full border border-gray-900 rounded-md px-3 py-2"
+                required
               />
             </div>
           </div>
           <div>
-            <button type="button" className="bg-green-700 text-white p-2 rounded-xl" onClick={descargarPDF}>Descargar PDF</button>
+            <button
+              type="submit"
+              className="bg-green-700 text-white p-2 rounded-xl"
+            >
+              Registrar entradas
+            </button>
           </div>
         </form>
       </section>
@@ -266,10 +363,12 @@ function App() {
                   >
                     Total
                   </td>
-                  <td className="py-2 px-4 border-b border-gray-300">{(formData.tipoEntrada == "General" &&
+                  <td className="py-2 px-4 border-b border-gray-300">
+                    {(formData.tipoEntrada == "General" &&
                       35 * formData.cantidad) ||
                       formData.cantidad * 60}{" "}
-                    s/</td>
+                    s/
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -282,6 +381,62 @@ function App() {
             <p className="text-sm">Priscilla Bueno</p>
           </footer>
         </div>
+      </div>
+      {openModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
+          <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
+            <button
+              className="absolute top-2 right-2 text-2xl rounded-lg text-gray-500 hover:text-gray-700"
+              onClick={() => setOpenModal(false)}
+            >
+              x
+            </button>
+            <h2 className="text-xl font-bold mb-4 text-center">
+              Se registró correctamente las entradas
+            </h2>
+            <div className="h-[400px] overflow-y-scroll">
+              {dataModal &&
+                dataModal?.tickets.map((item, index) => (
+                  <Entrada
+                    type={dataModal?.price == 60 && "platinium"}
+                    key={index}
+                  >
+                    <QRCode value={item?.ticketId} size={300} />
+                  </Entrada>
+                ))}
+            </div>
+
+            <div className="flex justify-end mt-4 space-x-2">
+              <button
+                onClick={descargarPDF}
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              >
+                Descargar Comprobante
+              </button>
+              <button
+                onClick={() => descargarEntradas(dataModal.quantity)}
+                className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+              >
+                Descargar Entradas
+              </button>
+              <button
+                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+                onClick={() => setOpenModal(false)}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {loading && <Loading />}
+      <div id="entradas">
+        {showTickets &&
+          dataModal?.tickets.map((item, index) => (
+            <Entrada type={dataModal?.price == 60 && "platinium"} key={index}>
+              <QRCode value={item?.ticketId} size={300} />
+            </Entrada>
+          ))}
       </div>
     </>
   );
