@@ -298,7 +298,7 @@ function App() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="font-semibold">Nombre y Apellido:</p>
-                <p>{formData.nombreApellido}</p>
+                <p>{formData.nombreApellido} {formData.apellido}</p>
               </div>
               <div>
                 <p className="font-semibold">DNI:</p>
