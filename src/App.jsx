@@ -116,7 +116,7 @@ function App() {
   return (
     <>
     {!user && (
-          <Navigate to="/" replace={true} />
+          <Navigate to="/generador-boletas/" replace={true} />
         )}
       <section
         id="formulario"

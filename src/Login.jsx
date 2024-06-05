@@ -37,7 +37,7 @@ const LoginPage = () => {
         console.log(JSON.stringify(response.data));
         localStorage.setItem("username", username);
         localStorage.setItem("isLoggedIn", "true");
-        window.location.href = "/home";
+        window.location.href = "/generador-boletas/home";
       })
       .catch(function (error) {
         alert("ERROR AL INICIAR SESION", error);
@@ -47,7 +47,7 @@ const LoginPage = () => {
   return (
     <>
     {localStorage.getItem('isLoggedIn') && (
-          <Navigate to="/home" replace={true} />
+          <Navigate to="/generador-boletas/home" replace={true} />
         )}
       <div className="flex items-center justify-center min-h-screen bg-gray-200">
         <div className="bg-white p-8 rounded shadow-md w-full sm:w-96">
