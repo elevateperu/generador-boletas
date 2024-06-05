@@ -54,7 +54,7 @@ const LoginPage = () => {
         <Loading/>
     )}
     {localStorage.getItem('isLoggedIn') && (
-          <Navigate to="/generador-boletas/home" replace={true} />
+          <Navigate to="/home" replace={true} />
         )}
       <div className="flex items-center justify-center min-h-screen bg-gray-200">
         <div className="bg-white p-8 rounded shadow-md w-full sm:w-96">
