@@ -2,13 +2,16 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import Loading from "./components/Loading";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
+    setLoading(true)
     e.preventDefault();
     console.log("user", username);
     // Validación básica del formulario
@@ -37,15 +40,19 @@ const LoginPage = () => {
         console.log(JSON.stringify(response.data));
         localStorage.setItem("username", username);
         localStorage.setItem("isLoggedIn", "true");
-        window.location.href = "/generador-boletas/home";
+        setLoading(false)
       })
       .catch(function (error) {
+        setLoading(false)
         alert("ERROR AL INICIAR SESION", error);
       });
   };
 
   return (
     <>
+    {loading && (
+        <Loading/>
+    )}
     {localStorage.getItem('isLoggedIn') && (
           <Navigate to="/generador-boletas/home" replace={true} />
         )}
