@@ -10,11 +10,11 @@ import {
 
 const router = createHashRouter([
   {
-    path: "/generador-boletas/home",
+    path: "/home",
     element: <App />,
   },
   {
-    path: "/generador-boletas/*",
+    path: "/",
     element: <LoginPage/>,
   },
 ]);
