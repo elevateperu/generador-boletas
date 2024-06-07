@@ -1,20 +1,23 @@
 import logo from "./assets/Logo.png";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import axios from "axios";
 import Loading from "./components/Loading";
 import Entrada from "./components/Entrada";
 import QRCode from "react-qr-code";
 import { Navigate } from "react-router-dom";
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
 
 function App() {
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dataModal, setDataModal] = useState({});
   const [showTickets, setShowTickets] = useState(false);
-  const [user, setUser] = useState(localStorage.getItem('isLoggedIn'))
+  const [user, setUser] = useState(localStorage.getItem("isLoggedIn"));
+  const [dataToExcel, setDataToExcel] = useState({});
   const [formData, setFormData] = useState({
     nombreApellido: "",
     apellido: "",
@@ -31,6 +34,15 @@ function App() {
     medioPago: "",
     tipoEntrada: "",
   });
+
+  const exportToExcel = () => {
+    const fileName = 'reporte.xlsx';
+    const ws = XLSX.utils.json_to_sheet(dataToExcel);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "REPORTE");
+    const file = XLSX.writeFile(wb, fileName);
+    FileSaver.saveAs(file, fileName)
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -113,11 +125,32 @@ function App() {
     console.log(response);
     console.log(dataModal);
   };
+  const getAllTickets = async () => {
+    const response = await axios.get("https://www.conciertoelevate.com");
+    console.log(response)
+    const auxData = response.data.filter((item) => item.status == "PAGADO" || item.status == "approved").map((item) => {
+      return{
+        "Nombre": item.nameUser,
+        "Apellido": item.lastName,
+        "Monto": item.price * item.quantity,
+        "Cantidad": item.quantity,
+        "Tipo": item.price == 35 && "General" || "Platinium",
+        "Medio Pago": item.codeTransaction && "YAPE/PLIN/TRANSFERENCIA" || "Mercado Pago",
+        "Numero Operacion": item.codeTransaction || item.idMercadoPago,
+        "DNI": item.dni
+      }
+
+    })
+    setDataToExcel(auxData)
+  };
+  useEffect(() => {
+    getAllTickets();
+  }, []);
+
   return (
     <>
-    {!user && (
-          <Navigate to="/" replace={true} />
-        )}
+      {!user && <Navigate to="/" replace={true} />}
+      <button className="bg-green-600 text-white p-2 rounded-lg m-4" onClick={exportToExcel}>Descargar reporte</button>
       <section
         id="formulario"
         className="p-8 bg-white border border-gray-300 max-w-4xl mx-auto my-8"
@@ -298,7 +331,9 @@ function App() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="font-semibold">Nombre y Apellido:</p>
-                <p>{formData.nombreApellido} {formData.apellido}</p>
+                <p>
+                  {formData.nombreApellido} {formData.apellido}
+                </p>
               </div>
               <div>
                 <p className="font-semibold">DNI:</p>
