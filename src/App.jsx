@@ -104,7 +104,7 @@ function App() {
       "https://www.conciertoelevate.com/ticket",
       {
         quantity: formData.cantidad,
-        price: (formData.tipoEntrada == "General" && 35) || 60,
+        price: (formData.tipoEntrada == "General" && 35) || 70,
         nameUser: formData.nombreApellido,
         lastName: formData.apellido,
         dni: formData.dni,
@@ -381,12 +381,12 @@ function App() {
                     {formData.cantidad}
                   </td>
                   <td className="py-2 px-4 border-b border-gray-300">
-                    {(formData.tipoEntrada == "General" && "35") || "60"} s/
+                    {(formData.tipoEntrada == "General" && "35") || "70"} s/
                   </td>
                   <td className="py-2 px-4 border-b border-gray-300">
                     {(formData.tipoEntrada == "General" &&
                       35 * formData.cantidad) ||
-                      formData.cantidad * 60}{" "}
+                      formData.cantidad * 70}{" "}
                     s/
                   </td>
                 </tr>
@@ -401,7 +401,7 @@ function App() {
                   <td className="py-2 px-4 border-b border-gray-300">
                     {(formData.tipoEntrada == "General" &&
                       35 * formData.cantidad) ||
-                      formData.cantidad * 60}{" "}
+                      formData.cantidad * 70}{" "}
                     s/
                   </td>
                 </tr>
@@ -433,7 +433,7 @@ function App() {
               {dataModal &&
                 dataModal?.tickets.map((item, index) => (
                   <Entrada
-                    type={dataModal?.price == 60 && "platinium"}
+                    type={dataModal?.price ==70 && "platinium"}
                     key={index}
                   >
                     <QRCode value={item?.ticketId} size={300} />
@@ -468,7 +468,7 @@ function App() {
       <div id="entradas">
         {showTickets &&
           dataModal?.tickets.map((item, index) => (
-            <Entrada type={dataModal?.price == 60 && "platinium"} key={index}>
+            <Entrada type={dataModal?.price == 70 && "platinium"} key={index}>
               <QRCode value={item?.ticketId} size={300} />
             </Entrada>
           ))}
