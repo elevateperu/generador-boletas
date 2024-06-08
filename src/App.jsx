@@ -104,7 +104,7 @@ function App() {
       "https://www.conciertoelevate.com/ticket",
       {
         quantity: formData.cantidad,
-        price: (formData.tipoEntrada == "General" && 35) || 70,
+        price: (formData.tipoEntrada == "General" && 35) || (formData.tipoEntrada == "MeetAndGreet" && 90) || 70,
         nameUser: formData.nombreApellido,
         lastName: formData.apellido,
         dni: formData.dni,
@@ -278,6 +278,7 @@ function App() {
                 <option value="">Seleccione</option>
                 <option value="General">General</option>
                 <option value="Platinium">Platinium</option>
+                <option value="MeetAndGreet">Meet And Greet</option>
               </select>
             </div>
             <div>
@@ -381,11 +382,12 @@ function App() {
                     {formData.cantidad}
                   </td>
                   <td className="py-2 px-4 border-b border-gray-300">
-                    {(formData.tipoEntrada == "General" && "35") || "70"} s/
+                    {(formData.tipoEntrada == "General" && "35") || (formData.tipoEntrada == "MeetAndGreet" && "90") || "70"} s/
                   </td>
                   <td className="py-2 px-4 border-b border-gray-300">
                     {(formData.tipoEntrada == "General" &&
-                      35 * formData.cantidad) ||
+                      35 * formData.cantidad) || (formData.tipoEntrada == "MeetAndGreet" &&
+                        90 * formData.cantidad) ||
                       formData.cantidad * 70}{" "}
                     s/
                   </td>
@@ -400,7 +402,8 @@ function App() {
                   </td>
                   <td className="py-2 px-4 border-b border-gray-300">
                     {(formData.tipoEntrada == "General" &&
-                      35 * formData.cantidad) ||
+                      35 * formData.cantidad) || (formData.tipoEntrada == "MeetAndGreet" &&
+                        90 * formData.cantidad) ||
                       formData.cantidad * 70}{" "}
                     s/
                   </td>
@@ -433,7 +436,7 @@ function App() {
               {dataModal &&
                 dataModal?.tickets.map((item, index) => (
                   <Entrada
-                    type={dataModal?.price ==70 && "platinium"}
+                    type={dataModal?.price == 70 && "platinium" || dataModal?.price == 90 && "MeetAndGreet"}
                     key={index}
                   >
                     <QRCode value={item?.ticketId} size={300} />
@@ -468,7 +471,7 @@ function App() {
       <div id="entradas">
         {showTickets &&
           dataModal?.tickets.map((item, index) => (
-            <Entrada type={dataModal?.price == 70 && "platinium"} key={index}>
+            <Entrada type={dataModal?.price == 70 && "platinium" || dataModal?.price == 90 && "MeetAndGreet"} key={index}>
               <QRCode value={item?.ticketId} size={300} />
             </Entrada>
           ))}

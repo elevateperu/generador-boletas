@@ -33,7 +33,7 @@ const Entrada = ({ children, type }) => {
             <p className="text-gray-900 font-bold">{type == 'platinium' && 'Platinium' || 'General'}</p>
           </div>
           <div>
-            <p>{type == 'platinium' && '70' || '35'} s/</p>
+            <p>{type == 'platinium' && '70' || type == 'MeetAndGreet' && '90'  || '35'} s/</p>
           </div>
         </div>
         <div className="flex justify-center pb-8">{children}</div>
