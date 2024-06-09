@@ -1,0 +1,49 @@
+.App {
+    text-align: center;
+    background-color: #000; /* Fondo negro */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: #61dafb; /* Azul claro */
+  }
+  
+  .App-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  h1 {
+    color: #61dafb; /* Azul claro */
+    margin-bottom: 20px;
+  }
+  
+  input {
+    padding: 10px;
+    font-size: 16px;
+    margin-right: 10px;
+    border: 2px solid #61dafb; /* Borde azul claro */
+    border-radius: 5px;
+    background-color: #000; /* Fondo negro */
+    color: #61dafb; /* Texto azul claro */
+  }
+  
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #61dafb; /* Fondo azul claro */
+    color: #000; /* Texto negro */
+    border: 2px solid #61dafb; /* Borde azul claro */
+    border-radius: 5px;
+  }
+  
+  button:hover {
+    background-color: #21a1f1; /* Fondo azul más oscuro al pasar el ratón */
+    border-color: #21a1f1; /* Borde azul más oscuro al pasar el ratón */
+  }
+  
