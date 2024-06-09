@@ -53,9 +53,7 @@ const LoginPage = () => {
     {loading && (
         <Loading/>
     )}
-    {localStorage.getItem('isLoggedIn') && (
-          <Navigate to="/home" replace={true} />
-        )}
+
       <div className="flex items-center justify-center min-h-screen bg-gray-200">
         <div className="bg-white p-8 rounded shadow-md w-full sm:w-96">
           <h2 className="text-2xl font-bold mb-4 text-center">

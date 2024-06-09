@@ -149,7 +149,6 @@ function App() {
 
   return (
     <>
-      {!user && <Navigate to="/" replace={true} />}
       <button className="bg-green-600 text-white p-2 rounded-lg m-4" onClick={exportToExcel}>Descargar reporte</button>
       <section
         id="formulario"
