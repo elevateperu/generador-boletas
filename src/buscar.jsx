@@ -44,7 +44,7 @@ const Buscar = () => {
 
     var config = {
       method: "get",
-      url: `https://www.conciertoelevate.com//getTicketByIdMercadoPago?id=${inputValue}`,
+      url: `https://www.conciertoelevate.com/getTicketById?id=${inputValue}`,
       headers: {},
       data: data,
     };
